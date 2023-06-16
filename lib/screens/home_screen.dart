@@ -10,7 +10,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 class HomeScreen extends StatefulWidget {
   final String url;
-  const HomeScreen({super.key, this.url = "https://www.amazon.in"});
+  const HomeScreen({super.key, required this.url});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -44,6 +44,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final description =
         document.querySelector('#productDescription')?.text.trim();
     final imageElement = document.querySelector('img#landingImage');
+    // final imageElement = document.querySelector('#landingImage');
+
     final imageUrl = imageElement?.attributes['src'] ?? '';
     final metadata = {
       'title': title,
@@ -53,13 +55,6 @@ class _HomeScreenState extends State<HomeScreen> {
       "url": url,
     };
     final isValuePresent = mapList.any((map) => map['url'] == metadata['url']);
-
-    Fluttertoast.showToast(
-        msg: "this item is already saved",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 100,
-        fontSize: 16.0);
     if (!isValuePresent) {
       Fluttertoast.showToast(
           msg: "item added",
@@ -71,51 +66,15 @@ class _HomeScreenState extends State<HomeScreen> {
         mapList.add(metadata);
       });
       saveMapList();
-    }
-
-    return metadata;
-  }
-
-  addAddress(data) {
-    if (box.read("saved_wallet") == null) {
-      addressList;
-      box.write("saved_wallet", addressList);
     } else {
-      if (box.read("saved_wallet").length == 0) {
-        box.write("saved_wallet", data);
-      } else {
-        mapList.add(data);
-        // addressList = box.read("saved_wallet");
-        // addressList.insert(0, data);
-        // box.write("saved_wallet", addressList);
-        // return Fluttertoast.showToast(
-        //     msg: "Item Saved",
-        //     toastLength: Toast.LENGTH_SHORT,
-        //     gravity: ToastGravity.BOTTOM,
-        //     timeInSecForIosWeb: 100,
-        //     fontSize: 16.0);
-        // for (int i = 0; i < box.read("saved_wallet").length; i++) {
-        // if (box.read("saved_wallet")[i]["url"].contains(data["url"])) {
-        //   return Fluttertoast.showToast(
-        //       msg: "this item is already saved",
-        //       toastLength: Toast.LENGTH_SHORT,
-        //       gravity: ToastGravity.BOTTOM,
-        //       timeInSecForIosWeb: 100,
-        //       fontSize: 16.0);
-        // } else {
-        //   addressList = box.read("saved_wallet");
-        //   addressList.insert(0, data);
-        //   box.write("saved_wallet", addressList);
-        //   return Fluttertoast.showToast(
-        //       msg: "Item Saved",
-        //       toastLength: Toast.LENGTH_SHORT,
-        //       gravity: ToastGravity.BOTTOM,
-        //       timeInSecForIosWeb: 100,
-        //       fontSize: 16.0);
-        // }
-        // }
-      }
+      Fluttertoast.showToast(
+          msg: "this item is already saved",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 100,
+          fontSize: 16.0);
     }
+    return metadata;
   }
 
   InAppWebViewController? _webViewController;
@@ -123,21 +82,24 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Demo'), actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context)
-                .push(MaterialPageRoute(builder: (context) => MapListScreen()));
-          },
-          child: const Icon(
-            Icons.shopping_bag,
-            color: Colors.white,
-          ),
-        ),
-      ]),
+      appBar: AppBar(
+        title: const Text('Demo'),
+        // actions: [
+        //   TextButton(
+        //     onPressed: () {
+        //       Navigator.of(context).push(
+        //           MaterialPageRoute(builder: (context) => MapListScreen()));
+        //     },
+        //     child: const Icon(
+        //       Icons.shopping_bag,
+        //       color: Colors.white,
+        //     ),
+        //   ),
+        // ],
+      ),
       body: InAppWebView(
         initialUrlRequest: URLRequest(
-          url: Uri.parse("https://www.amazon.in"),
+          url: Uri.parse(widget.url),
         ),
         onWebViewCreated: (InAppWebViewController webViewController) {
           _webViewController = webViewController;
