@@ -1,36 +1,30 @@
+import 'package:demo/controller/set_data.dart';
 import 'package:demo/screens/home_screen.dart';
+import 'package:demo/screens/no_records_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 class LandingScreen extends StatefulWidget {
-  LandingScreen({super.key});
+  const LandingScreen({super.key});
 
   @override
   State<LandingScreen> createState() => _LandingScreenState();
 }
 
 class _LandingScreenState extends State<LandingScreen> {
-  TextEditingController _url = TextEditingController();
-
+  final TextEditingController _url = TextEditingController();
   final List<Map<String, dynamic>> mapList = [];
   final GetStorage storage = GetStorage();
-
-  @override
-  void initState() {
-    super.initState();
-    // Retrieve stored map list from local storage
-    final storedMapList = storage.read('mapList');
-    if (storedMapList != null) {
-      // If stored data exists, assign it to the map list
-      mapList.addAll(storedMapList.map<Map<String, dynamic>>(
-          (item) => Map<String, dynamic>.from(item)));
-    }
-  }
+  final controler = Get.put(MetadataController());
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () => storage.erase(),
+      //   child: Icon(Icons.clear_sharp),
+      // ),
       body: SafeArea(
         child: Center(
           child: InkWell(
@@ -69,90 +63,75 @@ class _LandingScreenState extends State<LandingScreen> {
                       ),
                     ),
                   ),
-                  Divider(
+                  const Divider(
                     color: Colors.black,
-                    thickness: 2,
+                    thickness: 1,
                   ),
-                  mapList.isEmpty
-                      ? Expanded(
+                  Obx(
+                    () {
+                      if (controler.metadata.value.length == 0) {
+                        return const Expanded(
                           flex: 4,
-                          child: const Center(
-                            child: Text(
-                              'No records found.',
-                              style: TextStyle(fontSize: 18),
-                            ),
-                          ),
-                        )
-                      : Expanded(
+                          child: NoRecordFound(),
+                        );
+                      } else {
+                        return Expanded(
                           flex: 4,
-                          child: RefreshIndicator(
-                            onRefresh: () async {
-                              return Future(() {
-                                setState(() {});
-                              });
-                            },
-                            child: ListView.builder(
-                              // reverse: true,
-                              // itemCount: 1,
-                              itemCount: mapList.length,
-                              itemBuilder: (context, index) {
-                                final map = mapList[index];
-                                return ListTile(
-                                  onTap: () {
-                                    Navigator.of(context)
-                                        .push(MaterialPageRoute(
-                                            builder: (context) => HomeScreen(
-                                                  url: map["url"],
-                                                )));
-                                  },
-                                  leading: CircleAvatar(
-                                    child: Image.network(map["imageUrl"] ?? ""),
-                                    backgroundColor: Colors.transparent,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => HomeScreen(
+                                    url: controler.metadata["url"],
                                   ),
-                                  title: Text('Item ${index + 1}'),
-                                  subtitle: Column(
-                                    children: [
-                                      Text(map["title"] ?? ""),
-                                      Text(
-                                        map["url"] ?? "",
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          color: Colors.blue,
-                                          decoration: TextDecoration.underline,
+                                ),
+                              );
+                            },
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Center(
+                                  child: SizedBox(
+                                    height: 150,
+                                    width: 150,
+                                    child: Image.network(
+                                        controler.metadata["imageUrl"] ?? ""),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Text(controler.metadata["title"] ?? ""),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                SelectableText(
+                                  controler.metadata["url"] ?? "",
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => HomeScreen(
+                                          url: controler.metadata["url"],
                                         ),
                                       ),
-                                    ],
+                                    );
+                                  },
+                                  maxLines: 2,
+                                  style: const TextStyle(
+                                    color: Colors.blue,
+                                    decoration: TextDecoration.underline,
                                   ),
-                                );
-                              },
+                                ),
+                              ],
                             ),
                           ),
-                        ),
-                  // const SizedBox(
-                  //   height: 20,
-                  // ),
-                  // Container(
-                  //   padding: const EdgeInsets.all(20),
-                  //   decoration: BoxDecoration(
-                  //       border: Border.all(color: Colors.black, width: 3),
-                  //       borderRadius: BorderRadius.circular(10)),
-                  //   height: 220,
-                  //   width: 200,
-                  //   child: Column(
-                  //     children: [
-                  //       Image.asset("assets/amazon.png"),
-                  //       const SizedBox(
-                  //         height: 5,
-                  //       ),
-                  //       const Text(
-                  //         "Visit us",
-                  //         style: TextStyle(
-                  //             fontWeight: FontWeight.bold, fontSize: 18),
-                  //       )
-                  //     ],
-                  //   ),
-                  // ),
+                        );
+                      }
+                    },
+                  ),
                 ],
               ),
             ),

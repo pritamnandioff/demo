@@ -1,4 +1,5 @@
 import 'package:demo/screens/home_screen.dart';
+import 'package:demo/screens/no_records_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -23,6 +24,23 @@ class _MapListScreenState extends State<MapListScreen> {
     }
   }
 
+  Widget dogImage(renderUrl) {
+    print(renderUrl);
+    return renderUrl == null
+        ? Container()
+        : Container(
+            width: 100.0,
+            height: 100.0,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              image: DecorationImage(
+                fit: BoxFit.cover,
+                image: NetworkImage(renderUrl),
+              ),
+            ),
+          );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,12 +48,7 @@ class _MapListScreenState extends State<MapListScreen> {
         title: const Text('Product List'),
       ),
       body: mapList.isEmpty
-          ? const Center(
-              child: Text(
-                'No records found.',
-                style: TextStyle(fontSize: 18),
-              ),
-            )
+          ? NoRecordFound()
           : ListView.builder(
               itemCount: mapList.length,
               itemBuilder: (context, index) {
@@ -48,17 +61,18 @@ class _MapListScreenState extends State<MapListScreen> {
                             )));
                   },
                   leading: CircleAvatar(
-                    child: Image.network(map["imageUrl"] ?? ""),
+                    // child: Image.network(map["imageUrl"] ?? ""),
+                    child: dogImage(map["imageUrl"]),
                     backgroundColor: Colors.transparent,
                   ),
                   title: Text('Item ${index + 1}'),
                   subtitle: Column(
                     children: [
                       Text(map["title"] ?? ""),
-                      Text(
+                      SelectableText(
                         map["url"] ?? "",
                         maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                        // overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           color: Colors.blue,
                           decoration: TextDecoration.underline,

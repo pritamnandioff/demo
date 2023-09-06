@@ -1,6 +1,6 @@
 name: demo
 description: A new Flutter project.
-publish_to: "none" 
+publish_to: "none"
 version: 1.0.0+1
 
 environment:
@@ -11,13 +11,12 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.2
   flutter_inappwebview: ^5.7.1+2
-  webview_flutter: ^4.2.2
   http: ^0.13.5
   html: ^0.15.0
   get_storage: ^2.1.1
-  flutter_html: ^3.0.0-alpha.6
   fluttertoast: ^8.2.2
-  shared_preferences: ^2.1.2
+  get: ^4.6.5
+  # flutter_user_agent: ^1.2.2
 
 dev_dependencies:
   flutter_test:

@@ -14,7 +14,10 @@ class NoRecordFound extends StatelessWidget {
           "No records found",
           style: TextStyle(color: Colors.black),
         ),
-        Icon(Icons.search_off),
+        Icon(
+          Icons.search_off,
+          color: Colors.black,
+        ),
       ],
     ));
   }
